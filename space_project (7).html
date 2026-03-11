@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Солнечная система</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <style>
+    /* === ЦВЕТОВЫЕ ПЕРЕМЕННЫЕ === */
+    /* Задаём основные цвета — чтобы менять их в одном месте */
+    :root {
+      --space: #03010d;   /* Фон страницы — тёмно-синий как космос */
+      --deep: #0a0520;    /* Фон карточек — чуть светлее */
+      --accent: #c084fc;  /* Акцентный цвет — фиолетовый */
+      --gold: #fbbf24;    /* Золотой — для иконки Солнца и цифр */
+      --cyan: #67e8f9;    /* Голубой — для подзаголовков h3 */
+      --text: #e2d9f3;    /* Основной цвет текста */
+      --muted: #9ca3af;   /* Приглушённый серый — для подписей */
+    }
+
+    /* Сброс отступов и рамок у всех элементов */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* === СТИЛИ СТРАНИЦЫ === */
+    body {
+      background: var(--space);
+      color: var(--text);
+      font-family: 'Exo 2', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden; /* Убираем горизонтальную прокрутку */
+    }
+
+    /* === ЗВЁЗДНОЕ НЕБО === */
+    /* Псевдоэлемент ::before создаёт фон из белых точек-звёзд */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(1px 1px at 10% 20%, white, transparent),
+        radial-gradient(1px 1px at 25% 55%, white, transparent),
+        radial-gradient(1px 1px at 40% 10%, rgba(255,255,255,.7), transparent),
+        radial-gradient(1px 1px at 60% 80%, white, transparent),
+        radial-gradient(1px 1px at 75% 35%, rgba(255,255,255,.5), transparent),
+        radial-gradient(1px 1px at 85% 65%, white, transparent),
+        radial-gradient(2px 2px at 15% 75%, rgba(255,255,255,.4), transparent),
+        radial-gradient(1px 1px at 50% 45%, white, transparent),
+        radial-gradient(1px 1px at 90% 15%, rgba(255,255,255,.6), transparent),
+        radial-gradient(1px 1px at 5% 90%, white, transparent),
+        radial-gradient(1px 1px at 33% 30%, rgba(255,255,255,.8), transparent),
+        radial-gradient(1px 1px at 70% 55%, white, transparent),
+        radial-gradient(2px 2px at 55% 70%, rgba(200,180,255,.5), transparent),
+        radial-gradient(1px 1px at 20% 40%, white, transparent),
+        radial-gradient(1px 1px at 80% 90%, rgba(255,255,255,.3), transparent);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* === ШАПКА САЙТА (header) === */
+    header {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      padding: 60px 20px 80px;
+      background: radial-gradient(ellipse at 50% 0%, rgba(192,132,252,.15) 0%, transparent 70%);
+      border-bottom: 1px solid rgba(192,132,252,.2);
+    }
+
+    .sun-icon {
+      font-size: 64px;
+      display: block;
+      margin-bottom: 16px;
+      animation: pulse 4s ease-in-out infinite;
+      filter: drop-shadow(0 0 24px #fbbf24);
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 24px #fbbf24); }
+      50% { transform: scale(1.08); filter: drop-shadow(0 0 40px #fbbf24); }
+    }
+
+    header h1 {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(2rem, 6vw, 4rem);
+      font-weight: 900;
+      letter-spacing: .08em;
+      background: linear-gradient(135deg, #fbbf24, #c084fc, #67e8f9);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    header p {
+      margin-top: 16px;
+      font-size: 1.1rem;
+      color: var(--muted);
+      letter-spacing: .05em;
+      max-width: 500px;
+      margin-inline: auto;
+    }
+
+    /* === НАВИГАЦИОННОЕ МЕНЮ (nav) === */
+    /* Прилипает к верху страницы при прокрутке (sticky) */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(3,1,13,.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(192,132,252,.15);
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      padding: 14px 20px;
+      flex-wrap: wrap;
+    }
+
+    nav a {
+      font-family: 'Orbitron', monospace;
+      font-size: .75rem;
+      letter-spacing: .1em;
+      color: var(--muted);
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: color .3s;
+    }
+
+    nav a:hover { color: var(--accent); }
+
+    /* === ОСНОВНОЙ КОНТЕНТ СТРАНИЦЫ (main) === */
+    main {
+      position: relative;
+      z-index: 5;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 60px 24px;
+    }
+
+    /* === РАЗДЕЛЫ (section) и ЗАГОЛОВКИ === */
+    section { margin-bottom: 80px; }
+
+    .section-label {
+      font-family: 'Orbitron', monospace;
+      font-size: .7rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    h2 {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      font-weight: 700;
+      color: white;
+      margin-bottom: 20px;
+    }
+
+    h3 {
+      font-family: 'Orbitron', monospace;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--cyan);
+      margin-bottom: 10px;
+    }
+
+    p {
+      line-height: 1.8;
+      color: var(--text);
+      margin-bottom: 16px;
+      font-size: 1.02rem;
+    }
+
+    /* === ВВОДНАЯ КАРТОЧКА С ТЕКСТОМ === */
+    .intro-card {
+      background: linear-gradient(135deg, rgba(192,132,252,.08), rgba(103,232,249,.05));
+      border: 1px solid rgba(192,132,252,.2);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 48px;
+    }
+
+    /* === БОЛЬШОЕ ИЗОБРАЖЕНИЕ С ПОДПИСЬЮ (figure) === */
+    .hero-image {
+      width: 100%;
+      border-radius: 16px;
+      overflow: hidden;
+      margin: 32px 0;
+      border: 1px solid rgba(192,132,252,.2);
+      position: relative;
+    }
+
+    .hero-image img {
+      width: 100%;
+      height: auto;
+      max-height: 500px;
+      object-fit: contain;
+      display: block;
+      background: #0a0520;
+    }
+
+    .hero-image figcaption {
+      padding: 12px 20px;
+      background: rgba(10,5,32,.8);
+      font-size: .85rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    /* === СЕТКА КАРТОЧЕК ПЛАНЕТ === */
+    /* CSS Grid — автоматически расставляет карточки в несколько колонок */
+    .planets-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+      margin-top: 32px;
+    }
+
+    .planet-card {
+      background: rgba(10,5,32,.7);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 14px;
+      padding: 24px;
+      transition: border-color .3s, transform .3s;
+      cursor: default;
+    }
+
+    .planet-card:hover {
+      border-color: rgba(192,132,252,.4);
+      transform: translateY(-4px);
+    }
+
+    .planet-emoji {
+      font-size: 2.5rem;
+      display: block;
+      margin-bottom: 12px;
+      filter: drop-shadow(0 0 10px rgba(251,191,36,.5));
+    }
+
+    .planet-name {
+      font-family: 'Orbitron', monospace;
+      font-size: 1rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 6px;
+    }
+
+    .planet-desc {
+      font-size: .9rem;
+      color: var(--muted);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .planet-stat {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: rgba(192,132,252,.12);
+      border: 1px solid rgba(192,132,252,.25);
+      font-size: .75rem;
+      color: var(--accent);
+      font-family: 'Orbitron', monospace;
+    }
+
+    /* FACTS LIST */
+    .facts-list {
+      list-style: none;
+      margin-top: 24px;
+    }
+
+    .facts-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 16px 0;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      font-size: 1rem;
+    }
+
+    .facts-list li:last-child { border-bottom: none; }
+
+    .fact-num {
+      font-family: 'Orbitron', monospace;
+      font-size: .75rem;
+      color: var(--gold);
+      min-width: 28px;
+      padding-top: 2px;
+    }
+
+    /* TABLE */
+    /* === ТАБЛИЦА С ДАННЫМИ === */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 28px;
+      font-size: .9rem;
+    }
+
+    thead tr {
+      background: rgba(192,132,252,.12);
+    }
+
+    th {
+      font-family: 'Orbitron', monospace;
+      font-size: .7rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      padding: 14px 16px;
+      text-align: left;
+      border-bottom: 1px solid rgba(192,132,252,.2);
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255,255,255,.05);
+      color: var(--text);
+    }
+
+    tr:hover td { background: rgba(255,255,255,.02); }
+
+    /* === БЛОК С ВИДЕО === */
+    /* Соотношение сторон 16:9 — стандарт для видео */
+    /* VIDEO */
+    .video-wrap {
+      margin-top: 32px;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(192,132,252,.2);
+      aspect-ratio: 16/9;
+      min-height: 270px;
+    }
+
+    /* Плеер YouTube растягиваем на весь блок */
+    .video-wrap iframe,
+    .video-wrap #ytPlayer {
+      width: 100%;
+      height: 100%;
+      display: block;
+      border: none;
+    }
+
+    /* QUOTE */
+    blockquote {
+      border-left: 3px solid var(--accent);
+      margin: 32px 0;
+      padding: 16px 24px;
+      background: rgba(192,132,252,.05);
+      border-radius: 0 12px 12px 0;
+      font-style: italic;
+      font-size: 1.1rem;
+      color: var(--text);
+    }
+
+    blockquote cite {
+      display: block;
+      margin-top: 10px;
+      font-size: .85rem;
+      color: var(--muted);
+      font-style: normal;
+    }
+
+    /* DIVIDER */
+    .divider {
+      border: none;
+      border-top: 1px solid rgba(192,132,252,.15);
+      margin: 60px 0;
+    }
+
+    /* FOOTER */
+    footer {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      padding: 40px 20px;
+      border-top: 1px solid rgba(192,132,252,.15);
+      background: rgba(10,5,32,.5);
+    }
+
+    footer p {
+      color: var(--muted);
+      font-size: .85rem;
+      margin: 0;
+    }
+
+    footer .footer-logo {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.2rem;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    @media (max-width: 600px) {
+      .planets-grid { grid-template-columns: 1fr; }
+      nav { gap: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<!-- ==============================
+     ШАПКА САЙТА
+     Содержит: иконку солнца, заголовок h1, описание
+     ============================== -->
+<header>
+  <span class="sun-icon">☀️</span>
+  <h1>Солнечная система</h1>
+  <p>Наш космический дом: восемь планет, одна звезда и бесконечные тайны</p>
+</header>
+
+<!-- NAV -->
+<!-- ==============================
+     НАВИГАЦИЯ
+     Ссылки-якоря для быстрого перехода к разделам
+     ============================== -->
+<nav>
+  <a href="#about">О системе</a>
+  <a href="#planets">Планеты</a>
+  <a href="#facts">Факты</a>
+  <a href="#data">Данные</a>
+  <a href="#video">Видео</a>
+</nav>
+
+<!-- ==============================
+     ОСНОВНОЙ КОНТЕНТ
+     Все разделы страницы внутри тега <main>
+     ============================== -->
+<main>
+
+  <!-- РАЗДЕЛ 1 — Введение: текст, картинка, цитата -->
+  <section id="about">
+    <p class="section-label">// 01 — Введение</p>
+    <h2>Что такое Солнечная система?</h2>
+
+    <div class="intro-card">
+      <p>
+        Солнечная система — это гравитационно связанная система, состоящая из Солнца и всех объектов,
+        вращающихся вокруг него: восьми планет, их спутников, карликовых планет, астероидов, комет и
+        межпланетной пыли. Её возраст составляет около <strong>4,6 миллиарда лет</strong>.
+      </p>
+      <p style="margin-bottom:0">
+        Солнце содержит <strong>99,86%</strong> всей массы системы и удерживает остальные объекты своим
+        притяжением. Расстояние от Солнца до края системы (облако Оорта) — около 2 световых лет.
+      </p>
+    </div>
+
+    <figure class="hero-image">
+      <img
+        src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Planets2013.svg/1200px-Planets2013.svg.png"
+        alt="Планеты Солнечной системы"
+        onerror="this.src='https://via.placeholder.com/960x300/0a0520/c084fc?text=Солнечная+система'"
+      />
+      <figcaption>Планеты Солнечной системы (не в масштабе) — от Меркурия до Нептуна</figcaption>
+    </figure>
+
+    <blockquote>
+      «Земля — колыбель человечества, но нельзя вечно оставаться в колыбели.»
+      <cite>— Константин Циолковский</cite>
+    </blockquote>
+  </section>
+
+  <hr class="divider"/>
+
+  <!-- РАЗДЕЛ 2 — Планеты: карточки с описанием каждой планеты -->
+  <section id="planets">
+    <p class="section-label">// 02 — Планеты</p>
+    <h2>Восемь планет системы</h2>
+    <p>
+      Планеты делятся на две группы: <strong>планеты земной группы</strong> (Меркурий, Венера, Земля, Марс) —
+      твёрдые и каменистые, и <strong>планеты-гиганты</strong> (Юпитер, Сатурн, Уран, Нептун) — преимущественно
+      газовые и ледяные.
+    </p>
+
+    <div class="planets-grid">
+      <div class="planet-card">
+        <span class="planet-emoji">🌑</span>
+        <div class="planet-name">Меркурий</div>
+        <p class="planet-desc">Ближайшая к Солнцу планета. Почти нет атмосферы, экстремальные перепады температур — от −180°C до +430°C.</p>
+        <span class="planet-stat">0,39 а.е. от Солнца</span>
+      </div>
+      <div class="planet-card">
+        <span class="planet-emoji">🌕</span>
+        <div class="planet-name">Венера</div>
+        <p class="planet-desc">Самая горячая планета (+465°C). Плотная атмосфера из CO₂ создаёт мощный парниковый эффект.</p>
+        <span class="planet-stat">0,72 а.е. от Солнца</span>
+      </div>
+      <div class="planet-card">
+        <span class="planet-emoji">🌍</span>
+        <div class="planet-name">Земля</div>
+        <p class="planet-desc">Единственная известная нам планета с жизнью. Жидкая вода, кислородная атмосфера, магнитное поле.</p>
+        <span class="planet-stat">1,00 а.е. от Солнца</span>
+      </div>
+      <div class="planet-card">
+        <span class="planet-emoji">🔴</span>
+        <div class="planet-name">Марс</div>
+        <p class="planet-desc">«Красная планета» из-за оксида железа. Здесь находится Олимп — самый высокий вулкан в Солнечной системе (21 км).</p>
+        <span class="planet-stat">1,52 а.е. от Солнца</span>
+      </div>
+      <div class="planet-card">
+        <span class="planet-emoji">🟠</span>
+        <div class="planet-name">Юпитер</div>
+        <p class="planet-desc">Самая большая планета — в 1300 раз больше Земли. Большое красное пятно — гигантский шторм размером с нашу планету.</p>
+        <span class="planet-stat">5,20 а.е. от Солнца</span>
+      </div>
+      <div class="planet-card">
+        <span class="planet-emoji">🪐</span>
+        <div class="planet-name">Сатурн</div>
+        <p class="planet-desc">Знаменит своими кольцами из льда и камней. Плотность Сатурна настолько мала, что он мог бы плавать в воде.</p>
+        <span class="planet-stat">9,58 а.е. от Солнца</span>
+      </div>
+      <div class="planet-card">
+        <span class="planet-emoji">🔵</span>
+        <div class="planet-name">Уран</div>
+        <p class="planet-desc">Вращается «лёжа на боку» — ось наклонена на 98°. Ледяной гигант с температурой −224°C.</p>
+        <span class="planet-stat">19,2 а.е. от Солнца</span>
+      </div>
+      <div class="planet-card">
+        <span class="planet-emoji">🌊</span>
+        <div class="planet-name">Нептун</div>
+        <p class="planet-desc">Самая далёкая планета. Скорость ветра достигает 2100 км/ч — рекорд Солнечной системы.</p>
+        <span class="planet-stat">30,1 а.е. от Солнца</span>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider"/>
+
+  <!-- РАЗДЕЛ 3 — Интересные факты: нумерованный список ul/li -->
+  <section id="facts">
+    <p class="section-label">// 03 — Интересные факты</p>
+    <h2>Удивительные факты о космосе</h2>
+
+    <ul class="facts-list">
+      <li>
+        <span class="fact-num">01</span>
+        <span>Свет от Солнца достигает Земли примерно за <strong>8 минут 20 секунд</strong>, преодолевая расстояние в ~150 млн км.</span>
+      </li>
+      <li>
+        <span class="fact-num">02</span>
+        <span>Юпитер настолько велик, что все остальные планеты Солнечной системы <strong>поместились бы внутри него</strong> одновременно.</span>
+      </li>
+      <li>
+        <span class="fact-num">03</span>
+        <span>На Марсе есть признаки того, что <strong>миллиарды лет назад</strong> там текли реки и существовали озёра с жидкой водой.</span>
+      </li>
+      <li>
+        <span class="fact-num">04</span>
+        <span>Сутки на Венере длиннее её года: один оборот вокруг оси занимает <strong>243 земных дня</strong>, а вокруг Солнца — 225 дней.</span>
+      </li>
+      <li>
+        <span class="fact-num">05</span>
+        <span>Солнечная система находится на расстоянии около <strong>26 000 световых лет</strong> от центра нашей галактики Млечный Путь.</span>
+      </li>
+      <li>
+        <span class="fact-num">06</span>
+        <span>Один из спутников Сатурна — Энцелад — выбрасывает в космос <strong>гейзеры из жидкой воды</strong>, что делает его кандидатом на наличие жизни.</span>
+      </li>
+    </ul>
+  </section>
+
+  <hr class="divider"/>
+
+  <!-- РАЗДЕЛ 4 — Таблица: сравнительные данные всех планет -->
+  <section id="data">
+    <p class="section-label">// 04 — Сравнительные данные</p>
+    <h2>Параметры планет</h2>
+    <p>Основные характеристики восьми планет Солнечной системы в сравнении с Землёй.</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Планета</th>
+          <th>Диаметр (км)</th>
+          <th>Период обращения</th>
+          <th>Спутников</th>
+          <th>Тип</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>🌑 Меркурий</td><td>4 879</td><td>88 дней</td><td>0</td><td>Каменистая</td></tr>
+        <tr><td>🌕 Венера</td><td>12 104</td><td>225 дней</td><td>0</td><td>Каменистая</td></tr>
+        <tr><td>🌍 Земля</td><td>12 756</td><td>365 дней</td><td>1</td><td>Каменистая</td></tr>
+        <tr><td>🔴 Марс</td><td>6 792</td><td>687 дней</td><td>2</td><td>Каменистая</td></tr>
+        <tr><td>🟠 Юпитер</td><td>142 984</td><td>11,9 лет</td><td>95</td><td>Газовый гигант</td></tr>
+        <tr><td>🪐 Сатурн</td><td>120 536</td><td>29,5 лет</td><td>146</td><td>Газовый гигант</td></tr>
+        <tr><td>🔵 Уран</td><td>51 118</td><td>84 года</td><td>28</td><td>Ледяной гигант</td></tr>
+        <tr><td>🌊 Нептун</td><td>49 528</td><td>165 лет</td><td>16</td><td>Ледяной гигант</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <hr class="divider"/>
+
+  <!-- РАЗДЕЛ 5 — Видео: встроенный плеер YouTube (iframe) -->
+  <section id="video">
+    <p class="section-label">// 05 — Видеоматериал</p>
+    <h2>Полная история Земли — Выпуск 1</h2>
+    <p>
+      Первый выпуск из серии «Полная История Земли» — о том, как сформировалась наша планета
+      около <strong>5 миллиардов лет назад</strong>. Как появилась Земля, откуда взялись континенты,
+      как развивалась жизнь — от первых организмов до динозавров и человека.
+    </p>
+
+    <!-- Код видео скопирован с YouTube через кнопку "Поделиться → Встроить" -->
+    <div class="video-wrap">
+      <iframe
+        width="560"
+        height="315"
+        src="https://www.youtube.com/embed/9FVvh-E7AMY?si=Fan1nn1AdpoSJij4"
+        title="YouTube video player"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allowfullscreen
+        style="width:100%;height:100%;border:none;"
+      ></iframe>
+    </div>
+  </section>
+
+</main>
+
+<!-- ==============================
+     ПОДВАЛ САЙТА (footer)
+     Содержит: имя автора, класс, учебный год, источники
+     ============================== -->
+<footer>
+  <div class="footer-logo">☀️ SOLAR SYSTEM</div>
+  <p>Автор: <strong style="color:var(--accent)">Сычева Яна</strong></p>
+  <p style="margin-top:6px">Проект по информатике · 10 класс · 2025–2026 учебный год</p>
+
+  <!-- Список источников информации и медиаматериалов -->
+  <div style="margin-top:20px;border-top:1px solid rgba(192,132,252,.15);padding-top:16px;font-size:.82rem;color:#6b7280;line-height:2;">
+    <p style="color:var(--muted);margin-bottom:6px;font-family:'Orbitron',monospace;font-size:.7rem;letter-spacing:.1em;">ИСТОЧНИКИ</p>
+    <p>📖 Информация о планетах: <a href="https://solarsystem.nasa.gov" target="_blank" style="color:var(--accent);text-decoration:none;">solarsystem.nasa.gov</a> (NASA)</p>
+    <p>📖 Энциклопедические данные: <a href="https://ru.wikipedia.org/wiki/Солнечная_система" target="_blank" style="color:var(--accent);text-decoration:none;">ru.wikipedia.org</a> (Википедия)</p>
+    <p>🎬 Видеоматериал: <a href="https://www.youtube.com" target="_blank" style="color:var(--accent);text-decoration:none;">youtube.com</a> (YouTube)</p>
+    <p>🖼️ Изображение планет: <a href="https://commons.wikimedia.org" target="_blank" style="color:var(--accent);text-decoration:none;">commons.wikimedia.org</a> (Wikimedia Commons)</p>
+  </div>
+</footer>
+
+</body>
+</html>
